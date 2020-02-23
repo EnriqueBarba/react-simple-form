@@ -1,29 +1,59 @@
 import React from 'react'
 
 const validators = {
-  name: val => true
+  name: val => val.length > 3,
+  bio: val => true,
+  age: val => val >= 18
 }
 
 class UserForm extends React.Component {
   state = {
     data: {
+      name: '',
+      bio: '',
+      age: 1
     },
     errors: {
+      name: true,
+      age: true,
     },
     touch: {
     }
   }
 
-  handleSubmit = (event) => {
+  handleSubmit = (e) => {
     // call parent function
+    e.preventDefault()
+    this.props.onAddUser({...this.state.data})
   }
 
-  handleBlur = (event) => {
+  handleBlur = (e) => {
     // means in and out
+    const attr = e.target.name
+    this.setState({
+      touch:{
+        ...this.state.touch,
+        [attr]: true
+      }
+    })
   }
 
-  handleChange = (event) => {
+  handleChange = (e) => {
     // use event.target!!
+    //const param = e.target.name
+    const {name,value} = e.target
+    const isValid = validators[name](value)
+    
+    this.setState({
+      data:{
+        ...this.state.data,
+        [name]: value
+      },
+      errors: {
+        ...this.state.errors,
+        [name]: !isValid
+      }
+    })
     // change state.data and state.error ;)
   }
 
@@ -39,17 +69,55 @@ class UserForm extends React.Component {
 
             <input
               type="text"
-              className="form-control"
+              className={`form-control ${errors.name && touch.name ? 'is-invalid' : ''}`}
               id="name"
+              name="name"
               autoComplete="off"
-              // value={}
-              // onBlur={}
-              // onChange={}
+              value={data.name}
+              onBlur={this.handleBlur}
+              onChange={this.handleChange}
               placeholder="Name" />
 
-            {errors.name && (
+            {errors.name && touch.name &&(
               <div className="invalid-feedback">
                 Must be > 3
+              </div>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="bio">Bio</label>
+
+            <input
+              type="textarea"
+              className={`form-control`}
+              id="bio"
+              name="bio"
+              autoComplete="off"
+              value={data.bio}
+              onBlur={this.handleBlur}
+              onChange={this.handleChange}
+              placeholder="Bio" />
+
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="age">Bio</label>
+
+            <select
+              className={`form-control ${errors.age && touch.age ? 'is-invalid' : ''}`}
+              id="age"
+              name="age"
+              autoComplete="off"
+              value={data.age}
+              onBlur={this.handleBlur}
+              onChange={this.handleChange}
+              placeholder="Age">
+                {new Array(100).fill().map((e,i) => (<option key={i} value={i+1}>{i+1}</option>))}
+            </select>
+            {errors.age && touch.age &&(
+              <div className="invalid-feedback">
+                Must be over-age
               </div>
             )}
           </div>

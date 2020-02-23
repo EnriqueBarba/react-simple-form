@@ -6,6 +6,8 @@ const UserCard = ({ avatar, name, bio, age }) => {
       <div className="d-flex flex-nowrap">
         <div>
           <h6>{name}</h6>
+          <h5>{age}</h5>
+          <p>{bio}</p>
         </div>
       </div>
     </div>
